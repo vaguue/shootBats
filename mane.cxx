@@ -1,8 +1,9 @@
 #include "mane.h"
 
-Background::Background(QWidget* parent = 0) : QWidget(parent) {
+Background::Background(QWidget* parent = 0) : QWidget(parent), Logic(&width, &height) {
     img = new QPixmap("./png/back.png");
     gun = new QPixmap("./png/pushka.png");
+    bullet = new QPixmap("./png/shar.png");
     width = img->size().width();
     height = img->size().height();
     setFixedSize(width, height);

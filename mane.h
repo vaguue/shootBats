@@ -10,9 +10,10 @@
 #include <QProgressBar>
 #include <QMouseEvent>
 #include <QtMath>
+#include "logic.h"
 
 
-struct Background : public QWidget {
+struct Background : public QWidget, public Logic {
     Q_OBJECT
     size_t height = 600, width = 430;
     bool pressed=false, init=false;
@@ -20,6 +21,7 @@ struct Background : public QWidget {
     QPixmap* img;
     QPixmap* gun;
     QPixmap* curGun;
+    QPixmap* bullet;
     double gunAngle = M_PI_2;
     void rotateGun(int,int);
 public slots:
