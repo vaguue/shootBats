@@ -1,2 +1,2 @@
 qmake game.pro
-make && ./game
+make && echo running... && ./game

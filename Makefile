@@ -52,8 +52,9 @@ OBJECTS_DIR   = ./
 
 ####### Files
 
-SOURCES       = mane.cxx 
-OBJECTS       = mane.o
+SOURCES       = mane.cxx moc_mane.cpp
+OBJECTS       = mane.o \
+		moc_mane.o
 DIST          = /usr/lib/qt/mkspecs/features/spec_pre.prf \
 		/usr/lib/qt/mkspecs/common/unix.conf \
 		/usr/lib/qt/mkspecs/common/linux.conf \
@@ -135,7 +136,7 @@ DIST          = /usr/lib/qt/mkspecs/features/spec_pre.prf \
 		/usr/lib/qt/mkspecs/features/exceptions.prf \
 		/usr/lib/qt/mkspecs/features/yacc.prf \
 		/usr/lib/qt/mkspecs/features/lex.prf \
-		game.pro  mane.cxx
+		game.pro mane.h mane.cxx
 QMAKE_TARGET  = game
 DESTDIR       = 
 TARGET        = game
@@ -327,6 +328,7 @@ distdir: FORCE
 	@test -d $(DISTDIR) || mkdir -p $(DISTDIR)
 	$(COPY_FILE) --parents $(DIST) $(DISTDIR)/
 	$(COPY_FILE) --parents /usr/lib/qt/mkspecs/features/data/dummy.cpp $(DISTDIR)/
+	$(COPY_FILE) --parents mane.h $(DISTDIR)/
 	$(COPY_FILE) --parents mane.cxx $(DISTDIR)/
 
 
@@ -359,18 +361,18 @@ compiler_moc_predefs_clean:
 moc_predefs.h: /usr/lib/qt/mkspecs/features/data/dummy.cpp
 	g++ -pipe -O2 -Wall -Wextra -dM -E -o moc_predefs.h /usr/lib/qt/mkspecs/features/data/dummy.cpp
 
-compiler_moc_header_make_all:
+compiler_moc_header_make_all: moc_mane.cpp
 compiler_moc_header_clean:
-compiler_moc_objc_header_make_all:
-compiler_moc_objc_header_clean:
-compiler_moc_source_make_all: mane.moc
-compiler_moc_source_clean:
-	-$(DEL_FILE) mane.moc
-mane.moc: mane.cxx \
+	-$(DEL_FILE) moc_mane.cpp
+moc_mane.cpp: mane.h \
 		moc_predefs.h \
 		/usr/bin/moc
-	/usr/bin/moc $(DEFINES) --include /home/nightowl/wsp/cxx/game/moc_predefs.h -I/usr/lib/qt/mkspecs/linux-g++ -I/home/nightowl/wsp/cxx/game -I/home/nightowl/wsp/cxx/game -I/usr/include/qt -I/usr/include/qt/QtWidgets -I/usr/include/qt/QtGui -I/usr/include/qt/QtCore -I/usr/include/c++/10.1.0 -I/usr/include/c++/10.1.0/x86_64-pc-linux-gnu -I/usr/include/c++/10.1.0/backward -I/usr/lib/gcc/x86_64-pc-linux-gnu/10.1.0/include -I/usr/local/include -I/usr/lib/gcc/x86_64-pc-linux-gnu/10.1.0/include-fixed -I/usr/include mane.cxx -o mane.moc
+	/usr/bin/moc $(DEFINES) --include /home/nightowl/wsp/cxx/game/moc_predefs.h -I/usr/lib/qt/mkspecs/linux-g++ -I/home/nightowl/wsp/cxx/game -I/home/nightowl/wsp/cxx/game -I/usr/include/qt -I/usr/include/qt/QtWidgets -I/usr/include/qt/QtGui -I/usr/include/qt/QtCore -I/usr/include/c++/10.1.0 -I/usr/include/c++/10.1.0/x86_64-pc-linux-gnu -I/usr/include/c++/10.1.0/backward -I/usr/lib/gcc/x86_64-pc-linux-gnu/10.1.0/include -I/usr/local/include -I/usr/lib/gcc/x86_64-pc-linux-gnu/10.1.0/include-fixed -I/usr/include mane.h -o moc_mane.cpp
 
+compiler_moc_objc_header_make_all:
+compiler_moc_objc_header_clean:
+compiler_moc_source_make_all:
+compiler_moc_source_clean:
 compiler_uic_make_all:
 compiler_uic_clean:
 compiler_yacc_decl_make_all:
@@ -379,12 +381,15 @@ compiler_yacc_impl_make_all:
 compiler_yacc_impl_clean:
 compiler_lex_make_all:
 compiler_lex_clean:
-compiler_clean: compiler_moc_predefs_clean compiler_moc_source_clean 
+compiler_clean: compiler_moc_predefs_clean compiler_moc_header_clean 
 
 ####### Compile
 
-mane.o: mane.cxx 
+mane.o: mane.cxx mane.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o mane.o mane.cxx
+
+moc_mane.o: moc_mane.cpp 
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o moc_mane.o moc_mane.cpp
 
 ####### Install
 

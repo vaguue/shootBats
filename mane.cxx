@@ -1,31 +1,29 @@
-#include <iostream>
-#include <QWidget>
-#include <QApplication>
-#include <QLabel>
-#include <QGraphicsScene>
-#include <QGraphicsView>
-#include <QPushButton>
-#include <QGraphicsItem>
+#include "mane.h"
 
-struct Widget : public QWidget {
-    Q_OBJECT
-    Widget* ui;
-    QGraphicsScene* scene;
-    //Triangle* tr;
-    Widget(QWidget* parent = 0) : QWidget(parent), ui(new Widget) {
+Background::Background(QWidget* parent = 0) : QWidget(parent) {
+    setFixedSize(width, height);
+    img = new QPixmap("./png/back.png");
+    btn = new QPushButton("suks", this);
+    btn->setGeometry((width>>1)-40, height-30, 80, 30);
+    QObject::connect(btn, SIGNAL(clicked()), QApplication::instance(), SLOT(quit()));
+    connect(this, SIGNAL(clicked()), this, SLOT(onclick()));
+}
 
-    }
-};
+void Background::paintEvent(QPaintEvent* event) {
+    QPainter painter(this);
+    painter.drawPixmap(QRect(0,0, width, height), *img); 
+}
 
+void Background::onclick() {
+    using namespace std;
+    cout << "clicked" << endl;
+}
 
 int main(int argc, char *argv[ ])
 {
 
 QApplication app(argc, argv);
-QLabel hello("<center>Welcome to my first Qt program</center>");
-hello.setWindowTitle("My First Qt Program");
-hello.resize(400, 400);
-hello.show();
+Background main;
+main.show();
 return app.exec();
-
 }
