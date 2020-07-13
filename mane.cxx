@@ -21,6 +21,7 @@ void Background::paintEvent(QPaintEvent* event) {
 void Background::rotateGun(int x, int y) {
     using namespace std;
     x -= width>>1;
+    y = height-y;
     double tg = (double)x/(double)y;
     gunAngle = qAtan(tg);
     cout << "angle: " << gunAngle << ", tg: " << tg << endl;
