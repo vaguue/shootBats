@@ -1,12 +1,13 @@
 #include "mane.h"
 
 Background::Background(QWidget* parent = 0) : QWidget(parent) {
-    setFixedSize(width, height);
     img = new QPixmap("./png/back.png");
     gun = new QPixmap("./png/pushka.png");
+    width = img->size().width();
+    height = img->size().height();
+    setFixedSize(width, height);
     curGun = new QPixmap(*gun);
-
-/*    btn = new QPushButton("suks", this);
+/*  btn = new QPushButton("suks", this);
     btn->setGeometry((width>>1)-40, height-30, 80, 30);
     QObject::connect(btn, SIGNAL(clicked()), QApplication::instance(), SLOT(quit())); */
 }
