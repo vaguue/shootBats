@@ -13,7 +13,7 @@
 #include "logic.h"
 
 
-struct Background : public QWidget, public Logic {
+struct Background : public QWidget {
     Q_OBJECT
     size_t height = 600, width = 430;
     bool pressed=false, init=false;
@@ -24,6 +24,7 @@ struct Background : public QWidget, public Logic {
     QPixmap* bullet;
     double gunAngle = M_PI_2;
     void rotateGun(int,int);
+    Logic* eL;
 public slots:
     void onclick();
 protected:

@@ -3,11 +3,14 @@
 #include <utility>
 #include <QTimer>
 #include <QPoint>
+#include <QFrame>
 #include <QRandomGenerator>
 #include <QtMath>
 #include <QTimerEvent>
 
-struct Logic {
+struct Logic : public QFrame {
+    Q_OBJECT
+public:
     std::vector<std::vector<bool>> field; 
     std::vector<std::tuple<QPointF, double, double>> bullets;
     int tout = 70;
@@ -16,7 +19,7 @@ struct Logic {
     size_t* w;
     QPointF start;
     QTimer bulletTime;
-    Logic(size_t* h, size_t* w);
+    Logic(size_t* h, size_t* w, QWidget* parent = nullptr);
     void initField();
     void initGun();
     void shoot(double angle);

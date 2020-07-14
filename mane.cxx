@@ -1,6 +1,6 @@
 #include "mane.h"
 
-Background::Background(QWidget* parent = 0) : QWidget(parent), Logic(&width, &height) {
+Background::Background(QWidget* parent = nullptr) : QWidget(parent) {
     img = new QPixmap("./png/back.png");
     gun = new QPixmap("./png/pushka.png");
     bullet = new QPixmap("./png/shar.png");
@@ -8,6 +8,8 @@ Background::Background(QWidget* parent = 0) : QWidget(parent), Logic(&width, &he
     height = img->size().height();
     setFixedSize(width, height);
     curGun = new QPixmap(*gun);
+    eL = new Logic(&width, &height);
+    eL->initField();
 /*  btn = new QPushButton("suks", this);
     btn->setGeometry((width>>1)-40, height-30, 80, 30);
     QObject::connect(btn, SIGNAL(clicked()), QApplication::instance(), SLOT(quit())); */

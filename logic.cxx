@@ -2,7 +2,7 @@
 
 #define mk make_tuple
 
-Logic::Logic(size_t* w, size_t* h) : w{w}, h{h} {
+Logic::Logic(size_t* w, size_t* h, QWidget* parent) : QFrame(parent), w{w}, h{h} {
     bulletTime.setInterval(tout);
 }
 
