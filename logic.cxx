@@ -44,28 +44,12 @@ void Logic::batEvent() {
         else {
             //cout << "raw: " << x << " " << y << endl;
             //cout << "ceil: " << qCeil(x) << " " << qCeil(y) << endl;
-            auto Cx = qCeil(x);
-            auto Cy = qCeil(y);
-            if ( Cx == *w) Cx -= 1;
-            for (size_t j = Cx - bats[i].hitW; j < Cx + bats[i].hitW, j < *w; ++j) {
-                for (size_t k = Cy - bats[i].hitW; k < Cy + bats[i].hitH, k < *h; ++k) {
-                    if (j >= 0 && k >= 0 && j < *w && k < *w && field[j][k] == i+1) field[j][k] = 0; 
-                }
-            }
             y += bats[i].Yspeed;
             bats[i].coord.setY(y);
             x = min(max(double{0}, x + bats[i].Xspeed*(randDouble-0.5)), double{*w});
             bats[i].coord.setX(x);
             bats[i].state = (bats[i].state + (bats[i].timeBuff = (bats[i].timeBuff + tout) 
                         % bats[i].changeDelay)/bats[i].changeDelay) % bats[i].maxState;
-            Cx = qCeil(x);
-            Cy = qCeil(y);
-            if ( Cx == *w) Cx -= 1;
-            for (size_t j = Cx; j < Cx + bats[i].hitW, j < *w; ++j) {
-                for (size_t k = Cy; k < Cy + bats[i].hitH, k < *h; ++k) {
-                    if (j < *w && k < *w && field[j][k] == 0) field[j][k] = i+1; 
-                }
-            }
         }
 
     }
@@ -74,7 +58,7 @@ void Logic::batEvent() {
 void Logic::spawnerEvent() {
     using namespace std;
     cout << "lets spawn some bat " << randDouble*(*w) << endl;
-    bats.push_back(Bat(QPointF(randDouble*(*w), 0), 2, 2));
+    bats.push_back(Bat(QPointF(randDouble*(*w), 0), 10, 10));
     QTimer::singleShot(randDouble * spawnTreshold, this, &Logic::spawnerEvent);
 }
 
@@ -95,29 +79,30 @@ void Logic::timerEvent() {
         auto y      = point.y();
         auto& time  = get<1>(e);
         auto angle  = get<2>(e);
-        auto Cx     = qCeil(x);
-        auto Cy     = qCeil(y);
-        if ( Cx == *w) Cx -= 1;
         if (x <= 0 || x >= *w || y <= 0 || y >= *h) {
             cout << "dead" << endl;
             dead.push_back(i);
         }
-        else if (int idx = field[Cx][Cy]; idx != 0) {
-            cout << "KILLED MOUSE " << idx << endl;
-            idx -= 1;
-            for (size_t j = Cx - bats[idx].hitW; j < Cx + bats[idx].hitW, j < *w; ++j) {
-                for (size_t k = Cy - bats[idx].hitH; k < Cy + bats[idx].hitH, k < *h; ++k) {
-                    if (j > 0 && k > 0 && field[j][k] == idx) field[j][k] = 0; 
+        else {
+            bool ok = false;
+            for (size_t i = 0; i < bats.size(); ++i) {
+                if ((x >= bats[i].coord.x() && x <= bats[i].coord.x() + bats[i].hitW) 
+                        && (y >= bats[i].coord.y() && y <= bats[i].coord.y() + bats[i].hitH)) {
+                    ok = true;
+                    cout << "killed " << i << endl;
+                    dead.push_back(i);
+                    //TODO SIGNAL
+                    bats.erase(bats.begin() + i);
+                    break;
                 }
             }
-            bats.erase(bats.begin() + idx);
-        }
-        else {
-            cout << "s*t*cos:" << qCos(angle) << endl;
-            point.setX(x + speed * tout * qSin(angle));
-            point.setY(y + speed * tout * qCos(angle) - 0.01*tout*tout); //TODO
-            cout << "x, y inside timerEvent: " << get<0>(bullets[i]).x() << ' ' << get<0>(bullets[i]).y() << endl;
-            time += tout;
+            if (!ok) {
+                cout << "s*t*cos:" << qCos(angle) << endl;
+                point.setX(x + speed * tout * qSin(angle));
+                point.setY(y + speed * tout * qCos(angle) - 0.01*tout*tout); //TODO
+                cout << "x, y inside timerEvent: " << get<0>(bullets[i]).x() << ' ' << get<0>(bullets[i]).y() << endl;
+                time += tout;
+            }
         }
     }
     emit movement();
