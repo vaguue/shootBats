@@ -22,6 +22,7 @@ struct Background : public QWidget {
     QPixmap* gun;
     QPixmap* curGun;
     QPixmap* bullet;
+    QPixmap* bat;
     double gunAngle = M_PI_2;
     double rotateGun(int,int);
     Logic* eL;

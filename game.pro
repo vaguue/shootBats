@@ -16,5 +16,5 @@ CONFIG += debug
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 # Input
-HEADERS += mane.h logic.h
-SOURCES += mane.cxx logic.cxx
+HEADERS += mane.h logic.h bat.h
+SOURCES += mane.cxx logic.cxx bat.cxx

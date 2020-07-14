@@ -2,14 +2,15 @@
 
 
 Background::Background(QWidget* parent = nullptr) : QWidget(parent) {
-    img = new QPixmap("./png/back.png");
-    gun = new QPixmap("./png/pushka.png");
-    bullet = new QPixmap("./png/shar.png");
-    width = img->size().width();
-    height = img->size().height();
+    img     = new QPixmap("./png/back.png");
+    gun     = new QPixmap("./png/pushka.png");
+    bullet  = new QPixmap("./png/shar.png");
+    bat     = new QPixmap("./png/bat.png");
+    width   = img->size().width();
+    height  = img->size().height();
     setFixedSize(width, height);
-    curGun = new QPixmap(*gun);
-    eL = new Logic(&width, &height);
+    curGun  = new QPixmap(*gun);
+    eL      = new Logic(&width, &height);
     eL->initField();
     QObject::connect(eL, SIGNAL(movement()), this, SLOT(redrawBullets()));
     eL->initGun();
@@ -36,6 +37,11 @@ void Background::paintEvent(QPaintEvent* event) {
     }
     painter.drawPixmap(QRect((width - curGun->size().width())>>1,
                 height-(curGun->size().height()>>1), curGun->size().width(), curGun->size().height()), *curGun);
+    for (auto& e : eL->bats) {
+        auto x = e.coord.x();
+        auto y = e.coord.y();
+        painter.drawPixmap(QRect(x, y, bat->size().width(), bat->size().width()), *bat);
+    }
 }
 
 double Background::rotateGun(int x, int y) {
