@@ -10,11 +10,13 @@
 
 struct Logic : public QFrame {
     Q_OBJECT
+signals:
+    void movement();
 public:
     std::vector<std::vector<bool>> field; 
     std::vector<std::tuple<QPointF, double, double>> bullets;
-    int tout = 70;
-    int speed = 1;
+    int tout = 20;
+    double speed = 0.4;
     size_t* h;
     size_t* w;
     QPointF start;
@@ -23,5 +25,7 @@ public:
     void initField();
     void initGun();
     void shoot(double angle);
-    void timerEvent(QTimerEvent*);
+public slots:
+//    void timerEvent(QTimerEvent*);
+    void timerEvent();
 };

@@ -23,10 +23,10 @@ struct Background : public QWidget {
     QPixmap* curGun;
     QPixmap* bullet;
     double gunAngle = M_PI_2;
-    void rotateGun(int,int);
+    double rotateGun(int,int);
     Logic* eL;
 public slots:
-    void onclick();
+    void redrawBullets();
 protected:
     void mousePressEvent(QMouseEvent* event) override;
     void paintEvent(QPaintEvent* event) override;
