@@ -47,9 +47,9 @@ void Logic::batEvent() {
             auto Cx = qCeil(x);
             auto Cy = qCeil(y);
             if ( Cx == *w) Cx -= 1;
-            for (size_t j = Cx; j < bats[i].hitW, j < *w; ++j) {
-                for (size_t k = Cy; k < bats[i].hitH, k < *h; ++k) {
-                    if (field[j][k] == i) field[j][k] = 0; 
+            for (size_t j = Cx - bats[i].hitW; j < Cx + bats[i].hitW, j < *w; ++j) {
+                for (size_t k = Cy - bats[i].hitW; k < Cy + bats[i].hitH, k < *h; ++k) {
+                    if (j >= 0 && k >= 0 && j < *w && k < *w && field[j][k] == i+1) field[j][k] = 0; 
                 }
             }
             y += bats[i].Yspeed;
@@ -61,9 +61,9 @@ void Logic::batEvent() {
             Cx = qCeil(x);
             Cy = qCeil(y);
             if ( Cx == *w) Cx -= 1;
-            for (size_t j = Cx; j < bats[i].hitW, j < *w; ++j) {
-                for (size_t k = Cy; k < bats[i].hitH, k < *h; ++k) {
-                    if (field[j][k] == 0) field[j][k] = i; 
+            for (size_t j = Cx; j < Cx + bats[i].hitW, j < *w; ++j) {
+                for (size_t k = Cy; k < Cy + bats[i].hitH, k < *h; ++k) {
+                    if (j < *w && k < *w && field[j][k] == 0) field[j][k] = i+1; 
                 }
             }
         }
@@ -74,7 +74,7 @@ void Logic::batEvent() {
 void Logic::spawnerEvent() {
     using namespace std;
     cout << "lets spawn some bat " << randDouble*(*w) << endl;
-    bats.push_back(Bat(QPointF(randDouble*(*w), 0)));
+    bats.push_back(Bat(QPointF(randDouble*(*w), 0), 2, 2));
     QTimer::singleShot(randDouble * spawnTreshold, this, &Logic::spawnerEvent);
 }
 
@@ -89,15 +89,28 @@ void Logic::timerEvent() {
     using namespace std;
     vector<size_t> dead;
     for (size_t i = 0; i < bullets.size(); ++i) {
-        auto& e = bullets[i];
+        auto& e     = bullets[i];
         auto& point = get<0>(e);
-        auto x = point.x();
-        auto y = point.y();
-        auto& time = get<1>(e);
-        auto angle = get<2>(e);
+        auto x      = point.x();
+        auto y      = point.y();
+        auto& time  = get<1>(e);
+        auto angle  = get<2>(e);
+        auto Cx     = qCeil(x);
+        auto Cy     = qCeil(y);
+        if ( Cx == *w) Cx -= 1;
         if (x <= 0 || x >= *w || y <= 0 || y >= *h) {
             cout << "dead" << endl;
             dead.push_back(i);
+        }
+        else if (int idx = field[Cx][Cy]; idx != 0) {
+            cout << "KILLED MOUSE " << idx << endl;
+            idx -= 1;
+            for (size_t j = Cx - bats[idx].hitW; j < Cx + bats[idx].hitW, j < *w; ++j) {
+                for (size_t k = Cy - bats[idx].hitH; k < Cy + bats[idx].hitH, k < *h; ++k) {
+                    if (j > 0 && k > 0 && field[j][k] == idx) field[j][k] = 0; 
+                }
+            }
+            bats.erase(bats.begin() + idx);
         }
         else {
             cout << "s*t*cos:" << qCos(angle) << endl;
