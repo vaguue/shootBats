@@ -5,7 +5,7 @@
 
 Logic::Logic(size_t* w, size_t* h, QWidget* parent) : QFrame(parent), w{w}, h{h} {
     bulletTime.setInterval(tout);
-    batTime.setInterval(tout-10);
+    batTime.setInterval(tout);
     connect(&bulletTime, SIGNAL(timeout()), this, SLOT(timerEvent()));
     connect(&batTime, SIGNAL(timeout()), this, SLOT(batEvent()));
 }
@@ -34,6 +34,7 @@ void Logic::initGun() {
 
 void Logic::batEvent() {
     using namespace std;
+    int a = 0;
     for (size_t i = 0; i < bats.size(); ++i) {
         //cout << i << " bat coordinates: " << bats[i].coord.x() << " " << bats[i].coord.x() << endl;
         auto x = bats[i].coord.x();  
@@ -85,9 +86,11 @@ void Logic::timerEvent() {
         }
         else {
             bool ok = false;
+            auto _x = x;
+            auto _y = (*h) - y;
             for (size_t i = 0; i < bats.size(); ++i) {
-                if ((x >= bats[i].coord.x() && x <= bats[i].coord.x() + bats[i].hitW) 
-                        && (y >= bats[i].coord.y() && y <= bats[i].coord.y() + bats[i].hitH)) {
+                if ((_x >= bats[i].coord.x() - bats[i].hitW && _x <= bats[i].coord.x() + bats[i].hitW) 
+                        && (_y >= bats[i].coord.y() - bats[i].hitH && _y <= bats[i].coord.y() + bats[i].hitH)) {
                     ok = true;
                     cout << "killed " << i << endl;
                     dead.push_back(i);
