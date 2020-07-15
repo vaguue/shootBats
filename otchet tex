@@ -1,0 +1,293 @@
+\documentclass  [a4paper,  16 pt] {article}
+\usepackage [russian] {babel}
+\usepackage [left=30 mm, top=30 mm, right=30 mm, bottom=20mm, nohead, footskip=10 mm] {geometry}
+\usepackage[utf8]{inputenc}
+\usepackage{setspace,amsmath}
+\usepackage[colorlinks, urlcolor=blue]{hyperref}
+\usepackage{graphicx}
+\DeclareGraphicsExtensions{.pdf,.png,.jpg}
+\usepackage{floatflt}
+\usepackage{float}
+\usepackage{wrapfig}
+\linespread{1}
+\usepackage{indentfirst}
+
+\parindent=24pt
+
+
+\begin{document}
+
+\fontsize{10}{14pt}\selectfont
+\begin{center}
+\hfill \break
+\Large{МИНОБРНАУКИ РОССИИ} \\
+\hfill \break
+\small {ФЕДЕРАЛЬНОЕ ГОСУДАРСТВЕННОЕ БЮДЖЕТНОЕ ОБРАЗОВАТЕЛЬНОЕ УЧРЕЖДЕНИЕ }\\
+\small { ВЫСШЕГО ПРОФЕССИОНАЛЬНОГО ОБРАЗОВАНИЯ  } \\
+\hfill \break
+\normalsize {\textbf{ <<САНКТ-ПЕТЕРБУРГСКИЙ ПОЛИТЕХНИЧЕСКИЙ УНИВЕРСИТЕТ } }\\
+\hspace{1.25cm} {\normalsize {\textbf { ПЕТРА ВЕЛИКОГО>>}}} \\
+\hfill \break
+\large{Институт прикладной математики и механики }\\
+\hfill \break
+\large{ Кафедра: <<Телематика ( при ЦНИИ РТК )>> }\\
+\hfill \break
+Направление 02.03.01 Математика и компьютерные науки\\
+\vskip 2.5cm
+\Large {Отчёт по практической работе:}
+\vskip 0.3cm
+\Large{Реализация игры <<Пушки>>} \\
+\hfill \break
+\vskip 0.8cm
+\large{Группа: 3630201/90002} \\
+\vskip 3cm
+\end{center}
+
+
+\begin {tabular}{cccc}
+\hspace{0.5cm}Обучающийся: &\underline {\hspace{3cm}} &  &Маглий Екатерина Романовна \\\\
+\hspace{0.5cm}Преподаватель: &\underline {\hspace{3cm}} &  &Глазунов Вадим Валерьевич \\\\
+\end{tabular}
+\vskip 1.5 cm
+\hspace{10cm}\def \hrf#1{\hbox to#1{\hrulefill}}<<\hrf{2em}>>  \hrf{6em}  20\hrf{1em}~r.
+\vskip 2.5cm
+\begin {center} Санкт-Петербург 2020 \end{center}
+\thispagestyle {empty}
+
+\newpage
+
+\begin{center}\par \bf \abstractname
+\end{center}
+\par Основная задача летней практики заключалась в том, чтобы познакомить студентов с кроссплатформенным фреймворком QT для разработки ПО на языке C++ . Используя знания, полученные в ходе изучения объектно-ориентированного программирования и материалы лекций по QT, было необходимо реализовать игру "Пушки". В отчете представлена данная реализация.
+     
+\tableofcontents 
+\newpage
+
+\section{Постановка задачи} 
+\par Необходимо реализовать игру <<Пушки>>. Игра на время . Суть игры заключается в попадании во врагов посредством пушки . В течении всей игры враги летят сверху вниз и при помощи пушки нужно их убивать . Если пользователь не успел убить врагов ,т.е. враг дошел до низа , то проигрывает .
+\par Необходимо:
+\begin{enumerate}
+		\item реализовать визуальное отображение снарядов, находящихся в полете , движущихся врагов , отрисовку фона и наклон пушки в зависимости от точки нажатия на экран , используя графическую библиотеку QT.
+		\item реализовать интерфейс , реагирующий на нажатия пользователя в любую точку экрана, позволяющий стрелять под определенным углом .
+        \item реализовать расчет траектории полета снаряда и прописать рандомизированную траекторию полета врагов .
+		\item реализовать расчет попадания снаряда во врага .
+	\end{enumerate}
+\par  Размер окна 430х600 пикселей .
+
+\section{Реализация}
+\subsection{Background}
+\par Объект класса Background отвечает за отрисовку всех находящихся на экране объектов с определенной частотой . Класс Background имеет  поля:
+\begin{verbatim} 
+class Background : public QWidget {
+    Q_OBJECT
+    size_t height = 600, width = 430;
+    QPixmap* img;
+    QPixmap* gun;
+    QPixmap* curGun;
+    QPixmap* bullet;
+    QPixmap* bat;
+    double gunAngle = M_PI_2;
+    double rotateGun(int,int);
+    Logic* eL;
+public slots:
+    void redrawBullets();
+protected:
+    void mousePressEvent(QMouseEvent* event) override;
+    void paintEvent(QPaintEvent* event) override;
+    void mouseMoveEvent(QMouseEvent* event) override;
+    void mouseReleaseEvent(QMouseEvent* event) override;
+public:
+    Background(QWidget*);
+};
+\end{verbatim}
+\par  size\_t height -- высота окна.
+\par  size\_t width -- ширина окна.
+\par  QPixmap* img --  указатель на фоновое изображение.
+\par  QPixmap* gun -- указатель на изображение пушки.
+\par  QPixmap* curGun -- указатель на изображение пушик , повернутой под углом.
+\par  QPixmap* bullet -- указатель на изображение снаряда.
+\par  QPixmap* bat -- указатель на изображение врага.
+\par  double gunAngle -- текущий угол поворота пушки.
+\par  double rotateGun(int,int) -- метод , принимающий в качестве аргументов координаты нажатия на экран.
+\par  Logic* eL -- указатель на объект класса , отвечающего за внутреннюю логику игры.
+\par  void redrawBullets() -- слот , отвечающий за перерисовку экрана.
+\par  void mousePressEvent(QMouseEvent* event) -- обработчик нажатий.
+\par  void paintEvent(QPaintEvent* event) -- метод , вызывающийся при отрисовке экрана.
+\par  void mouseMoveEvent(QMouseEvent* event) -- данный метод вызывается при перемещении курсора по экрану.
+\par  void mouseReleaseEvent(QMouseEvent* event) -- данный метод вызывается при отпускании кнопки мыши пользователем.
+\par  Background(QWidget*) -- конструктор класса , принимает в качестве аргумента родительский виджит. Инициализирует внутреннюю логику приложения , считывает изображения из файлов , соединяет сигналы внутренней логики с собственными слотами.
+
+
+\subsection{Logic}
+\par Объект класса Logic -- класс , реализующий внутреннюю логику игру. Данный класс был написан с целью обстрагироваться от графического взаимодействия с пользователем. При применении шаблонов может быть использован при работе с другим фреймворком.
+\par Класс Logic содержит поля:
+\begin{verbatim} 
+class Logic : public QFrame {
+    Q_OBJECT
+signals:
+    void movement();
+public:
+    std::vector<std::tuple<QPointF, double, double>> bullets;
+    std::vector<Bat> bats;
+    int tout = 20;
+    int spawnTreshold = 2000;
+    double speed = 0.4;
+    size_t* h;
+    size_t* w;
+    QPointF start;
+    QTimer bulletTime;
+    QTimer batTime;
+    Logic(size_t* h, size_t* w, QWidget* parent = nullptr);
+    void initGun();
+    void shoot(double angle);
+public slots:
+    void timerEvent();
+    void spawnerEvent();
+    void batEvent();
+};
+\end{verbatim} 
+\par   void movement() -- сигнал , сообщающий о том , что нужно заного отрисовать экран.
+\par  std::vector<std::tuple<QPointF, double, double>> bullets -- вектор , содержащий в себе информацию о всех снарядах , находящихся в полете: текущие координаты (QPointF) , время в полете (double , так как в секундах) , угол запуска снаряда (double , так как в радианах).
+\par  tuple -- структура данных , являющаяся набором элементов определенной длины . В данном случае равной трем.
+\par   std::vector<Bat> bats -- вектор Bat , в котором находятся все находящиеся на данный момент на экране враги.
+\par  int tout -- частота отрисовки экрана (в миллисекундах).
+\par  int spawnTreshold -- максимальный временной интервал между появлениями врагов.
+\par  double speed -- начальная скорость полета снаряда.
+\par  size\_t* h -- указатель на текущую высоту экрана.
+\par  size\_t* w -- указатель на текущую ширину экрана.
+\par  QPointF start -- стартовая точка запуска снаряда.
+\par  QTimer bulletTime -- таймер , отвечающий за перемещение снарядов в пространстве. Запускает метод timerEvent() каждые tout миллисекунды.
+\par  QTimer batTime -- таймер , отвечающий за перемещение врагов. Запускает метод batEvent().
+\par  Logic(size\_t* h, size\_t* w, QWidget* parent = nullptr) -- конструктор класса . Принимает на выход указатели на высоту и ширину экрана , а также указатель на родительский виджет.
+\par  void initGun() -- устанавливает значение стартовой точки запуска снаряда и запускает таймеры.
+\par  void shoot(double angle) -- добавляет элемент в вектор снарядов.
+\par  void timerEvent() -- обновляет координаты из каждого снаряда из вектора bullet посредством формул x = v * t * cos(angle) , y = v * sin(angle) * t + $g*t^{2}/2$ , где speed=v , t - время в полете (лежит в структуру tuple вектора bullet) , причем константа g была подобрана вручную и g/2=3 . Также она проверяет , не вышел ли снаряд за границы экрана и не столкнулся ли с летящим врагом. Если снаряд вышел за границы экрана , или столкнулся с летящим врагом , то он удаляется из вектора bullet. В конце метода вызывает сигнал  movement , отвечающий за повторную отрисовку экрана.
+\par  void spawnerEvent() -- отвечает за создание новых врагов . Добавляет новую структу Bat  в вектор Bats . Координата по оси Y соответствует верхней части экрана , координата по оси X выбирается случайным часлом от 0 до ширины экрана (*w).
+\par  void batEvent() -- отвечает за перемещение врагов. По оси Y каждый враг имеет константную скорость , в то время как по оси X каждый враг совершает случайные движения влево или вправо.
+
+
+\subsection{Bat}
+\par Объект класса Bat содержит в себе информацию о текущем состоянии врага и некоторые константные значения. В данном классе нет статических полей , и сделано это с целью облегчения расширения игры в будущем (добавление новых типов врагов , различные скорости у различных врагов): 
+\begin{verbatim} 
+class Bat {
+public:
+   Bat(QPointF,int hitH=5,int hitW=5); 
+   int state = 0;
+   int maxState = 5;
+   int timeBuff = 0;
+   QPointF coord; 
+   size_t hitH, hitW;
+   double Yspeed = 0.8;
+   double Xspeed = 5;
+   int changeDelay = 100;
+};
+\end{verbatim} 
+\par Bat(QPointF,int hitH=5,int hitW=5) -- конструктор , который принимает в качестве аргументов стартовую точку (QPointF) и длину и ширину прямоугольника (окрестность координаты), при попадании снаряда в который враг умирает.
+\par int state -- текущее состояние врага. Используется для анимации.
+\par int maxState -- максимальное значение состояние врага.
+\par int timeBuff -- переменная , использующаяся для переключения переменной state. Как только значение timeBuff становится >= changeDelay , переключается переменная state.
+\par QPointF coord -- текущие координаты врага.
+\par size\_t hitH, hitW -- высота и ширина прямоугольника , при попадении в который враг умирает.
+\par double Yspeed -- скорость перемещения по оси Y.
+\par double Xspeed -- данное значение используется при случайных передвижениях влево или вправо , на него умножается случайное число от -0,5 до 0,5 , чтобы рассчитать смещение по оси X (производится проверка на не выход за пределы экрана внутри класса Logic).
+\par int changeDelay -- интервал времени , за который сменяется кадр анимации врага.
+
+\subsection{Элементы интерфейса игры}
+\par Игра начинается после первого клика по любой точке окна. С этого момента сверху начинают лететь враги , случайно перемещаясь влево или вправо во время полета. Нажатие по точке окна поворачивает изображение пушки под углом , соответствующим координатам нажатия. После чего из пушки вылетает снаряд под таким же углом и при попадании во врага убивает его. Если же хотя бы один враг долетел до нижней части экрана , игра заканчивается , и пользователю выводится длительность его игры.
+
+\newpage
+\section{Тестирование}
+\par Игра имеет 4 состояния: приветствие, процесс игры, выбран кусочек, пазл собран.
+
+%\includegraphics[width=80mm,height=80mm]{w.jpg}
+%\hspace{1.8cm}
+%\includegraphics[width=100mm, height=100mm]{end.jpg}\\
+
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=80mm,height=80mm]{welcome.jpg}
+\caption{Начало игры и главное меню}
+\label{fig:mpr}
+\end{figure}
+\hfill \break
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=80mm,height=80mm]{pieces.jpg}
+\caption{Процесс игры}
+\label{fig:mpr}
+\end{figure}
+\newpage
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=80mm,height=80mm]{game.jpg}
+\caption{Выбран кусочек пазла}
+\label{fig:mpr}
+\end{figure}
+\hfill \break
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=80mm,height=80mm]{end.jpg}
+\caption{Конец игры}
+\label{fig:mpr}
+\end{figure}
+
+\newpage
+
+
+\section{Заключение} 
+\par В ходе выполнения практического задания были реализованы структуры данных, отвечающие за окно игры и ее внутреннюю логику, использован графический метод их представления из библиотеки  Qt paintEvent. 
+\par Была достигнута задача данной работы - написана игра <<Пушки>>, в которой реализованы элементы кнопочного интерфейса, позволяющие запускать и завершать игру, предусмотрена возможность загрузки произвольного изображения размером 600х600 пикселей и реализовано перемещение кусочков пазла с помощью кнопки мыши.
+\par Для работы было использовано ПО: Qt 5.15.0 и Qt Cteator 2017. 
+
+
+\section{Список литературы}
+\par  \url{https://www.qt.io/} - официальный сайт Qt
+\par  \url{www.cyberforum.ru/qt/thread1224519.html} - Сайт cyberforum
+\par \url{https://habr.com/ru/post/164721/} - Сайт Habr
+%\par Были реализованы два класса с формой дизайнера QT. Класс PuzzleWidget, унаследованный от Widget, использовался в качестве родителя, так как наибольшее количество примеров с рисованием посредством метода PaintEvent использовало Widget. MainWindow унаследован от QMainWindow. С помощью дизайнера в классе MainWindow было расположено 2 объекта QFrame: frame  и  frame2. Данные объекты выполняют роль рамки, поэтому их тип QFrame. На первом расположен экземпляр класса  PuzzleWidget -- Puzzle и QWidget --  zagluska. На втором расположены 3 объекта типа QPushButton: About, exit, open.
+%\par Изображение фиксированного разрешения: 800 пикселей по ширине и 600 пикселей по высоте. Размер одного кусочка: 100 на 100 пикселей. Всего 6 строк  по 8 кусочков каждый. Кусочек представляет собой структуру MinPic, где img-- само изображение кусочка (100х100), а num -- это номер кусочка, равный индексу строки, умноженному на 8 плюс номерего столбца.
+%
+%
+%\par В классе PuzzleWidget определены следующие приватные поля:
+%
+%\par AllPic -- массив кусочков изображения, расположенных по порядку.
+%\par PointAllPic -- массив указателей на кусочки. требуется для того, чтобы не менять местами элементы MinPic.
+%\par pic -- изначальное изображение
+%\par old-point -- пара чисел. Элемент с данными индексами является выделенным -- его отображение изменено. Если old_point = (-1;-1), значит никакой элемент не выделен.
+%\par End -- булевая переменная. После завершения игры не позволяет менять местами кусочки.
+%
+%\par Приватные методы PuzzleWidget:
+%
+%
+%\par SetupPuzzle -- перемещивает массив PointAllPic.
+%\pa CheckPuzzle --  проходит весь массив PontAllPic. Если все элементы на своих местах, то есть их индекс строки, умноженный на 8, плюс номер столбца равен num элемента.
+%\par SetImage -- делит изображение pic на 48 кусочков, заполняя массивы AllPic и PointAllPic. 
+%\par find -- по координате клика мыши определяет индексы кусочка.
+%\par paintEvent -- отрисовывает массив PointAllPic.
+%\par mousePressEvent -- при нажатии на кусочек,выделяет его, если до этого никакой элемент не выделен. Если какой-либо элемент выделен, то они меняются местами (значения элементов массива PointAllPic) и никакойне явялется выделенным.
+%
+%\par Сигналы в классе PuzzleWidget
+%
+%\par PuzzleComplited -- сигнал, транслируемый из функции OpenImage в случае, если пазл собран.
+%\par ImageSetted -- сигнал, транслируемый из функции OpenImage. В случае, если выбранный пользователем файл существует и имеет размер 800на 600 пикселей.
+%
+%
+%\par В классе MainWindow реализованы 3 приватных слота: 
+%\par onAboutclicked -- вызывает всплывающее сообщение с информацией о программе.
+%\par GameComplited -- слот, связанный с сигналом  PuzzleComplited. Выводит сообщение с поздравлением: <<Congratulations! You have complited the puzzle!>>
+%\par GameStarted -- слот, связанный с сигналом  ImageSetted. Делает видимым Puzzle и закрывает виджет zagluska, который нужен, чтобы не вводить исключения  в PaintEvent.
+
+
+
+
+
+
+
+
+
+
+\end{document}
