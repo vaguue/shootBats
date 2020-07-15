@@ -1,4 +1,6 @@
 #include <iostream>
+#include <chrono>
+#include <sstream>
 #include <QWidget>
 #include <QApplication>
 #include <QLabel>
@@ -10,13 +12,15 @@
 #include <QProgressBar>
 #include <QMouseEvent>
 #include <QtMath>
+#include <QMessageBox>
 #include "logic.h"
 
 
 struct Background : public QWidget {
     Q_OBJECT
     size_t height = 600, width = 430;
-    bool pressed=false, init=false;
+    bool pressed = false;
+    std::chrono::time_point<std::chrono::system_clock> startTime;
     QPushButton* btn;
     QPixmap* img;
     QPixmap* gun;
@@ -28,6 +32,7 @@ struct Background : public QWidget {
     Logic* eL;
 public slots:
     void redrawBullets();
+    void finish();
 protected:
     void mousePressEvent(QMouseEvent* event) override;
     void paintEvent(QPaintEvent* event) override;
@@ -36,4 +41,5 @@ protected:
     void resizeEvent(QResizeEvent* event) override;
 public:
     Background(QWidget*);
+    ~Background();
 };

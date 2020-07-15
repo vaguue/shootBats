@@ -13,12 +13,12 @@ struct Logic : public QFrame {
     Q_OBJECT
 signals:
     void movement();
+    void losed();
 public:
-    std::vector<std::vector<int>> field; 
     std::vector<std::tuple<QPointF, double, double>> bullets;
     std::vector<Bat> bats;
     int tout = 20;
-    int spawnTreshold = 2000;
+    int spawnTreshold = 1000;
     double speed = 0.4;
     size_t* h;
     size_t* w;

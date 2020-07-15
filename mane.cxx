@@ -11,12 +11,39 @@ Background::Background(QWidget* parent = nullptr) : QWidget(parent) {
     setFixedSize(width, height);
     curGun  = new QPixmap(*gun);
     eL      = new Logic(&width, &height);
-    eL->initField();
     QObject::connect(eL, SIGNAL(movement()), this, SLOT(redrawBullets()));
-    eL->initGun();
-/*  btn = new QPushButton("suks", this);
+    QObject::connect(eL, SIGNAL(losed()), this, SLOT(finish()));
+ /* eL->initGun();
+    btn = new QPushButton("suks", this);
     btn->setGeometry((width>>1)-40, height-30, 80, 30);
     QObject::connect(btn, SIGNAL(clicked()), QApplication::instance(), SLOT(quit())); */
+}
+
+Background::~Background() {
+    delete img;
+    delete gun;
+    delete bullet;
+    delete bat;
+    delete curGun;
+    delete eL;
+}
+
+void Background::finish() {
+    using namespace std;
+    using namespace chrono;
+    auto endTime = system_clock::now();
+    auto duration = duration_cast<seconds>(endTime - startTime).count();
+    eL->bulletTime.stop();
+    eL->batTime.stop();
+    stringstream ss;
+    ss << "duration:" << duration;
+    cout << "duration: " << duration << endl;
+    QMessageBox msgBox;
+    msgBox.setText("GAME OVER");
+    msgBox.setInformativeText(ss.str().c_str());
+    msgBox.setStandardButtons(QMessageBox::Close);
+    int ret = msgBox.exec();
+    QApplication::instance()->quit();
 }
 
 void Background::redrawBullets() {
@@ -61,7 +88,13 @@ double Background::rotateGun(int x, int y) {
 
 void Background::mousePressEvent(QMouseEvent* event) {
     using namespace std;
-    if (event->button() == Qt::LeftButton) {
+    static bool started = false;
+    if (!started) {
+        eL->initGun();
+        started = true;
+        startTime = chrono::system_clock::now();
+    }
+    else if (event->button() == Qt::LeftButton) {
         auto point = event->pos();
         pressed = true; 
         cout << "clicked on: " << point.x() << ' ' << point.y() << endl;
