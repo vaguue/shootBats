@@ -1,11 +1,11 @@
 #include "mane.h"
 
 
-Background::Background(QWidget* parent = nullptr) : QWidget(parent) {
-    img     = new QPixmap("./png/back.png");
-    gun     = new QPixmap("./png/pushka.png");
-    bullet  = new QPixmap("./png/shar.png");
-    bat     = new QPixmap("./png/bat.png");
+Background::Background(QWidget* parent) : QWidget(parent) {
+    img     = new QPixmap("D:\\code\\shootBats-master\\shootBats-master\\png\\back.png");
+    gun     = new QPixmap("D:\\code\\shootBats-master\\shootBats-master\\png\\pushka.png");
+    bullet  = new QPixmap("D:\\code\\shootBats-master\\shootBats-master\\png\\shar.png");
+    bat     = new QPixmap("D:\\code\\shootBats-master\\shootBats-master\\png\\bat.png");
     width   = img->size().width();
     height  = img->size().height();
     setFixedSize(width, height);
@@ -13,10 +13,6 @@ Background::Background(QWidget* parent = nullptr) : QWidget(parent) {
     eL      = new Logic(&width, &height);
     QObject::connect(eL, SIGNAL(movement()), this, SLOT(redrawBullets()));
     QObject::connect(eL, SIGNAL(losed()), this, SLOT(finish()));
- /* eL->initGun();
-    btn = new QPushButton("suks", this);
-    btn->setGeometry((width>>1)-40, height-30, 80, 30);
-    QObject::connect(btn, SIGNAL(clicked()), QApplication::instance(), SLOT(quit())); */
 }
 
 Background::~Background() {
@@ -67,7 +63,9 @@ void Background::paintEvent(QPaintEvent* event) {
     for (auto& e : eL->bats) {
         auto x = e.coord.x();
         auto y = e.coord.y();
-        painter.drawPixmap(QRect(x, y, bat->size().width(), bat->size().width()), *bat);
+        int batW = bat->size().width()/e.maxState;
+        painter.drawPixmap(QRect(x, y, batW, bat->size().width()), *bat, QRect(batW*e.state, 0, batW, bat->size().height()));
+        std::cout << e.state << std::endl;
     }
 }
 
@@ -126,7 +124,7 @@ int main(int argc, char *argv[ ])
 {
 
 QApplication app(argc, argv);
-Background main;
+Background main(nullptr);
 main.show();
 return app.exec();
 }
