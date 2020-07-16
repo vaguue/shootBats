@@ -39,8 +39,11 @@ void Logic::batEvent() {
             bats[i].coord.setY(y);
             x = min(max(double{0+10}, x + bats[i].Xspeed*(randDouble-0.5)), double{*w-10});
             bats[i].coord.setX(x);
-            bats[i].state = (bats[i].state + (bats[i].timeBuff = (bats[i].timeBuff + tout) 
-                        % bats[i].changeDelay)/bats[i].changeDelay) % bats[i].maxState;
+            bats[i].timeBuff += tout;
+            if (bats[i].timeBuff >= bats[i].changeDelay) {
+                bats[i].timeBuff = 0;
+                bats[i].state = (bats[i].state + 1) % bats[i].maxState;
+            }
         }
 
     }
