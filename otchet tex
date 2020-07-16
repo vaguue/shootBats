@@ -63,7 +63,7 @@
 \tableofcontents 
 \newpage
 \section{Введение}
-\par Необходимо реализовать игру <<Пушки>>. Игра на время. Суть игры заключается в попадании во врагов посредством выстрелов из пушки, находящейся в нижней центральной части экрана. В течении всей игры враги летят сверху вниз и при помощи пушки нужно их убивать. Если пользователь не успел убить врагов, т.е. враг дошел до низа, то проигрывает. Было создано три класса: Background, Logic, Bat. Класс Background реализует отрисовку состояния игры и взаимодействия с пользователем. Хранит указатель на объект класса Logic, соединяет собственные слоты с его сигналами. Сам же класс Logic реализует физический аспект игры: перемещения снарядов, врагов, проверка на их столкновение. Хранит в одном из своих полей вектор объектов класса Bat, который хранит в себе все данные врага.
+\par Необходимо реализовать игру <<Пушки>>. Игра на время. Суть игры заключается в попадании во врагов посредством выстрелов из пушки, находящейся в нижней центральной части экрана. В течении всей игры враги летят сверху вниз и при помощи пушки нужно их убивать. Если пользователь не успел убить врагов, т.е. враг дошел до низа, то проигрывает.
 
 \section{Постановка задачи} 
 \par Необходимо:
@@ -77,6 +77,7 @@
 \par  Размер окна 430х600 пикселей.
 
 \section{Реализация}
+\par Было создано три класса: Background, Logic, Bat. Класс Background реализует отрисовку состояния игры и взаимодействия с пользователем. Хранит указатель на объект класса Logic, соединяет собственные слоты с его сигналами. Сам же класс Logic реализует физический аспект игры: перемещения снарядов, врагов, проверка на их столкновение. Хранит в одном из своих полей вектор объектов класса Bat, который хранит в себе все данные врага.
 \subsection{Background}
 \par Объект класса Background отвечает за отрисовку всех находящихся на экране объектов с определенной частотой. Данный класс наследуется от QWidget, так как QWidget это базовый класс для элемента пользовательского интерфейса, способного получать сообщения мыши и других элементов. Перегружает методы родительского класса, отвественные за получения сообщений после нажатий мыши. Класс Background имеет  поля:
 \begin{verbatim} 
@@ -105,7 +106,7 @@ public:
     ~Background();
 };
 \end{verbatim}
-\par Методы:
+\par {\bfМетоды}:
 \par  Background(QWidget*) -- конструктор класса, принимает в качестве аргумента родительский виджет. Инициализирует внутреннюю логику приложения, считывает изображения из файлов, соединяет сигналы внутренней логики с собственными слотами.
 \par  double rotateGun(int,int) -- метод, принимающий в качестве аргументов координаты нажатия на экран. Считает тангенс угла прямой, проходящей через точку нажатия и ноль в системе координат при которой пушка находится в точке (0, 0), ось Y направлена вверх, а ось X вправо (с точки зрения наблюдателя). После чего находит сам угол (через qAtan) и строит матрицу поворота , а затем поворачивает оригинальное изображение (gun) и сохраняет результат в curGun, который и отображается на экран методом paintEvent(QPaintEvent*).
 \par  void redrawBullets() -- слот, отвечающий за перерисовку экрана.
@@ -116,7 +117,7 @@ public:
 \par  void mouseReleaseEvent(QMouseEvent* event) -- данный метод вызывается при отпускании кнопки мыши пользователем. Фиксирует что курсор не нажат (pressed=false).
 \par  Деструктор класса Background() -- освобождает всю динамически выделенную (в конструкторе) память: память под изображение, память под объект класса логики.
 
-\par Поля:
+\par {\bfПоля}:
 \par  size\_t height -- высота окна.
 \par  size\_t width -- ширина окна.
 \par  bool pressed -- поле, значение которого равно true когда курсор зажат и false когда нет.
@@ -159,7 +160,7 @@ public slots:
     void batEvent();
 };
 \end{verbatim} 
-\par Методы:
+\par {\bfМетоды}:
 \par  Logic(size\_t* h, size\_t* w, QWidget* parent = nullptr) -- конструктор класса . Принимает на выход указатели на высоту и ширину экрана, а также указатель на родительский виджет.
 \par  void movement() -- сигнал, сообщающий о том , что нужно заново отрисовать экран.
 \par  void losed() -- сигнал, вызывающийся при достижении врагом нижней части экрана. 
@@ -170,7 +171,7 @@ public slots:
 \par  void shoot(double angle) -- добавляет элемент в вектор снарядов.
 
 
-\par Поля:
+\par {\bfПоля}:
 \par  std::vector<std::tuple<QPointF, double, double>> bullets -- вектор, содержащий в себе информацию о всех снарядах, находящихся в полете: текущие координаты (QPointF), время в полете (double , так как в секундах), угол запуска снаряда (double, так как в радианах).
 \par  tuple -- структура данных, являющаяся набором элементов определенной длины . В данном случае равной трем.
 \par  std::vector<Bat> bats -- вектор Bat, в котором находятся все находящиеся на данный момент на экране враги.
@@ -251,12 +252,12 @@ public:
 
 \newpage
 
-
 \section{Заключение} 
 \par В ходе выполнения практического задания были реализованы структуры данных, отвечающие за окно игры и ее внутреннюю логику, графическая часть была реализована с помощью QtPainter, физика игры была реализована с помощью QTimer, QMath, QRandomGenerator. 
 \par Были достигнуты подзадачи данной работы: 
 \par -- реализованы визуальное отображение снарядов, находящихся в полете, движущиеся враги, отрисовка фона и наклон пушки в зависимости от точки нажатия на экран посредством метода Backgroud::painterEvent(QPainterEvent*); 
-\par -- реализован интерфейс, реагирующий на нажатия пользователя в любую точку экрана, позволяющий стрелять под определенным углом посредством метода Background::mousePressEvent(QMouseEvent*); 
+\par -- реализован интерфейс, реагирующий на нажатия пользователя в любую точку экрана, позволяющий стрелять под определенным углом посредством 
+\par метода Background::mousePressEvent(QMouseEvent*); 
 \par -- реализован расчет траектории полета снаряда и прописана рандомизированная траектория полета врагов посредством метода Logic::timerEvent(); 
 \par -- реализован расчет попадания снаряда во врага посредством метода Logic::timerEvent();
 \par -- реализован таймер времени игры посредством Background::finish().
@@ -265,9 +266,368 @@ public:
 \par В качестве источника для получения информации использовалась официальная документация с сайта Qt.
 \par Для работы было использовано ПО: Qt 5.15 LTS и Qt Cteator.
 
+\section{Приложение} 
+{\bf mane.h}
+\begin{verbatim}
+ #include <iostream>
+ #include <chrono>
+ #include <sstream>
+ #include <QWidget>
+ #include <QApplication>
+ #include <QLabel>
+ #include <QGraphicsScene>
+ #include <QGraphicsView>
+ #include <QPushButton>
+ #include <QGraphicsItem>
+ #include <QSlider>
+ #include <QProgressBar>
+ #include <QMouseEvent>
+ #include <QtMath>
+ #include <QMessageBox>
+ #include "logic.h"
+
+
+ struct Background : public QWidget {
+    Q_OBJECT
+    size_t height = 600, width = 430;
+    bool pressed = false;
+    std::chrono::time_point<std::chrono::system_clock> startTime;
+    QPushButton* btn;
+    QPixmap* img;
+    QPixmap* gun;
+    QPixmap* curGun;
+    QPixmap* bullet;
+    QPixmap* bat;
+    double gunAngle = M_PI_2;
+    double rotateGun(int,int);
+    Logic* eL;
+public slots:
+    void redrawBullets();
+    void finish();
+protected:
+    void mousePressEvent(QMouseEvent* event) override;
+    void paintEvent(QPaintEvent* event) override;
+    void mouseMoveEvent(QMouseEvent* event) override;
+    void mouseReleaseEvent(QMouseEvent* event) override;
+    void resizeEvent(QResizeEvent* event) override;
+public:
+    Background(QWidget*);
+    ~Background();
+};
+\end{verbatim}
+
+{\bf mane.cxx}
+\begin{verbatim}
+#include "mane.h"
+
+
+Background::Background(QWidget* parent = nullptr) : QWidget(parent) {
+    img     = new QPixmap("./png/back.png");
+    gun     = new QPixmap("./png/pushka.png");
+    bullet  = new QPixmap("./png/shar.png");
+    bat     = new QPixmap("./png/bat.png");
+    width   = img->size().width();
+    height  = img->size().height();
+    setFixedSize(width, height);
+    curGun  = new QPixmap(*gun);
+    eL      = new Logic(&width, &height);
+    QObject::connect(eL, SIGNAL(movement()), this, SLOT(redrawBullets()));
+    QObject::connect(eL, SIGNAL(losed()), this, SLOT(finish()));
  
+}
+
+Background::~Background() {
+    delete img;
+    delete gun;
+    delete bullet;
+    delete bat;
+    delete curGun;
+    delete eL;
+}
+
+void Background::finish() {
+    using namespace std;
+    using namespace chrono;
+    auto endTime = system_clock::now();
+    auto duration = duration_cast<seconds>(endTime - startTime).count();
+    eL->bulletTime.stop();
+    eL->batTime.stop();
+    stringstream ss;
+    ss << "duration:" << duration;
+    cout << "duration: " << duration << endl;
+    QMessageBox msgBox;
+    msgBox.setText("GAME OVER");
+    msgBox.setInformativeText(ss.str().c_str());
+    msgBox.setStandardButtons(QMessageBox::Close);
+    int ret = msgBox.exec();
+    QApplication::instance()->quit();
+}
+
+void Background::redrawBullets() {
+    using namespace std;
+    update();
+}
+
+void Background::paintEvent(QPaintEvent* event) {
+    QPainter painter(this);
+    painter.drawPixmap(QRect(0,0, width, height), *img); 
+    for (auto& e : eL->bullets) {
+        auto x = std::get<0>(e).x();
+        auto y = std::get<0>(e).y();
+        y = height - y;
+        std::cout << "x, y: " << x << "," << y << std::endl;
+        painter.drawPixmap(QRect(x, y, bullet->size().width(), bullet->size().height()), *bullet);
+    }
+    painter.drawPixmap(QRect((width - curGun->size().width())>>1,
+                height-(curGun->size().height()>>1), curGun->size().width(), curGun->size().height()), *curGun);
+    for (auto& e : eL->bats) {
+        auto x = e.coord.x();
+        auto y = e.coord.y();
+        painter.drawPixmap(QRect(x, y, bat->size().width(), bat->size().width()), *bat);
+    }
+}
+
+double Background::rotateGun(int x, int y) {
+    using namespace std;
+    x -= width>>1;
+    y = height-y;
+    double tg = (double)x/(double)y;
+    gunAngle = qAtan(tg);
+    cout << "angle: " << gunAngle << ", tg: " << tg << endl;
+    QMatrix rm;
+    rm.rotate(qRadiansToDegrees(gunAngle));
+    delete curGun;
+    curGun = new QPixmap(gun->transformed(rm));
+    update();
+    return tg;
+}
+
+void Background::mousePressEvent(QMouseEvent* event) {
+    using namespace std;
+    static bool started = false;
+    if (!started) {
+        eL->initGun();
+        started = true;
+        startTime = chrono::system_clock::now();
+    }
+    else if (event->button() == Qt::LeftButton) {
+        auto point = event->pos();
+        pressed = true; 
+        cout << "clicked on: " << point.x() << ' ' << point.y() << endl;
+        rotateGun(point.x(), point.y());
+        eL->shoot(gunAngle);
+    }
+}
 
 
+void Background::mouseMoveEvent(QMouseEvent* event) {
+    using namespace std;
+    if (pressed) {
+        auto point = event->pos();
+        cout << "moved to: " << point.x() << ' ' << point.y() << endl;
+        rotateGun(point.x(), point.y());
+    }
+}
+
+void Background::mouseReleaseEvent(QMouseEvent* event) {
+    pressed = false;
+}
+
+void Background::resizeEvent(QResizeEvent* event) {
+
+}
+\end{verbatim}
+
+{\bf logic.h}
+\begin{verbatim}
+int main(int argc, char *argv[ ])
+{
+
+QApplication app(argc, argv);
+Background main;
+main.show();
+return app.exec();
+}
+
+#include <iostream>
+#include <vector>
+#include <utility>
+#include <QTimer>
+#include <QPoint>
+#include <QFrame>
+#include <QRandomGenerator>
+#include <QtMath>
+#include <QTimerEvent>
+#include "bat.h"
+
+struct Logic : public QFrame {
+    Q_OBJECT
+signals:
+    void movement();
+    void losed();
+public:
+    std::vector<std::tuple<QPointF, double, double>> bullets;
+    std::vector<Bat> bats;
+    int tout = 20;
+    int spawnTreshold = 1000;
+    double speed = 0.4;
+    size_t* h;
+    size_t* w;
+    QPointF start;
+    QTimer bulletTime;
+    QTimer batTime;
+    Logic(size_t* h, size_t* w, QWidget* parent = nullptr);
+    void initField();
+    void initGun();
+    void shoot(double angle);
+public slots:
+//    void timerEvent(QTimerEvent*);
+    void timerEvent();
+    void spawnerEvent();
+    void batEvent();
+};
+\end{verbatim}
+
+{\bf logic.cxx}
+\begin{verbatim}
+#include "logic.h"
+
+#define mk make_tuple
+#define randDouble QRandomGenerator::global()->generateDouble()
+
+Logic::Logic(size_t* w, size_t* h, QWidget* parent) : QFrame(parent), w{w}, h{h} {
+    bulletTime.setInterval(tout);
+    batTime.setInterval(tout);
+    connect(&bulletTime, SIGNAL(timeout()), this, SLOT(timerEvent()));
+    connect(&batTime, SIGNAL(timeout()), this, SLOT(batEvent()));
+}
+
+void Logic::initField() {
+
+}
+
+void Logic::initGun() {
+    start.setX((*w)/2);
+    start.setY(15);
+    bulletTime.start();
+    batTime.start();
+    QTimer::singleShot(randDouble * spawnTreshold, this, &Logic::spawnerEvent);
+}
+
+void Logic::batEvent() {
+    using namespace std;
+    for (size_t i = 0; i < bats.size(); ++i) {
+        //cout << i << " bat coordinates: " << bats[i].coord.x() << " " << bats[i].coord.x() << endl;
+        auto x = bats[i].coord.x();  
+        auto y = bats[i].coord.y();  
+        if (y >= *h) {
+            cout << "LOSED" << endl;
+            emit losed();
+        }
+        else {
+            //cout << "raw: " << x << " " << y << endl;
+            //cout << "ceil: " << qCeil(x) << " " << qCeil(y) << endl;
+            y += bats[i].Yspeed;
+            bats[i].coord.setY(y);
+            x = min(max(double{0+10}, x + bats[i].Xspeed*(randDouble-0.5)), double{*w-10});
+            bats[i].coord.setX(x);
+            bats[i].state = (bats[i].state + (bats[i].timeBuff = (bats[i].timeBuff + tout) 
+                        % bats[i].changeDelay)/bats[i].changeDelay) % bats[i].maxState;
+        }
+
+    }
+}
+
+void Logic::spawnerEvent() {
+    using namespace std;
+    cout << "lets spawn some bat " << randDouble*(*w) << endl;
+    bats.push_back(Bat(QPointF(randDouble*(*w), 0), 10, 10));
+    QTimer::singleShot(randDouble * spawnTreshold, this, &Logic::spawnerEvent);
+}
+
+void Logic::shoot(double angle) {
+    using namespace std;
+    cout << "shooted wirh angle: " << angle << endl;
+    bullets.push_back(mk(start, 0, angle));
+    cout << "bullets in the air: " << bullets.size() << endl;
+}
+
+void Logic::timerEvent() {
+    using namespace std;
+    vector<size_t> dead;
+    for (size_t i = 0; i < bullets.size(); ++i) {
+        auto& e     = bullets[i];
+        auto& point = get<0>(e);
+        auto x      = point.x();
+        auto y      = point.y();
+        auto& time  = get<1>(e);
+        auto angle  = get<2>(e);
+        if (x <= 0 || x >= *w || y <= 0 || y >= *h) {
+            cout << "dead" << endl;
+            dead.push_back(i);
+        }
+        else {
+            bool ok = false;
+            auto _x = x;
+            auto _y = (*h) - y;
+            for (size_t i = 0; i < bats.size(); ++i) {
+                if ((_x >= bats[i].coord.x() - bats[i].hitW && _x <= bats[i].coord.x() + bats[i].hitW) 
+                        && (_y >= bats[i].coord.y() - bats[i].hitH && _y <= bats[i].coord.y() + bats[i].hitH)) {
+                    ok = true;
+                    cout << "killed " << i << endl;
+                    dead.push_back(i);
+                    //TODO SIGNAL
+                    bats.erase(bats.begin() + i);
+                    break;
+                }
+            }
+            if (!ok) {
+                cout << "s*t*cos:" << qCos(angle) << endl;
+                point.setX(x + speed * tout * qSin(angle));
+                point.setY(y + speed * tout * qCos(angle) - 0.01*tout*tout); //TODO
+                cout << "x, y inside timerEvent: " << get<0>(bullets[i]).x() << ' ' << get<0>(bullets[i]).y() << endl;
+                time += tout;
+            }
+        }
+    }
+    emit movement();
+    for (size_t i = 0; i < dead.size(); ++i) {
+        bullets.erase(bullets.begin() + dead[i]);
+        //TODO SIGNAL
+    }
+}
+
+#undef mk
+ \end{verbatim}
+ 
+ {\bf bat.h}
+ \begin{verbatim}
+#include <iostream>
+#include <QRandomGenerator>
+#include <QtMath>
+#include <QPoint>
+
+struct Bat {
+   Bat(QPointF,int hitH=5,int hitW=5); 
+   int state = 0;
+   int maxState = 5;
+   int timeBuff = 0;
+   QPointF coord; 
+   size_t hitH, hitW;
+   double Yspeed = 0.8;
+   double Xspeed = 5;
+   int changeDelay = 100;
+};
+\end{verbatim}
 
 
+{\bf bat.cxx}
+ \begin{verbatim}
+#include "bat.h"
+
+Bat::Bat(QPointF start, int hitH, int hitW) : coord {start},
+    hitH{hitH}, hitW{hitW} { }
+
+\end{verbatim}
 \end{document}
+
